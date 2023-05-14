@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:futbol_teams/pages/home_page.dart';
+import 'package:futbol_teams/repositories/times_repository.dart';
+import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TimesRepository(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,11 +18,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Brasileirão',
       theme: ThemeData(
-          primarySwatch: Colors.purple,
+          primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity),
       home: const HomePage(),
     );

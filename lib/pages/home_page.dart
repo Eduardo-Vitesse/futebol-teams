@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:futbol_teams/controllers/home_controller.dart';
 import 'package:futbol_teams/models/time.dart';
 import 'package:futbol_teams/pages/time_page.dart';
+import 'package:futbol_teams/repositories/times_repository.dart';
+import 'package:futbol_teams/widgets/brasao.dart';
+import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,29 +29,34 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text("Brasileirão"),
       ),
-      body: ListView.separated(
-        itemCount: controller.tabela.length,
-        itemBuilder: ((context, index) {
-          final List<Time> tabela = controller.tabela;
-          return ListTile(
-            leading: Image.network(tabela[index].brasao.toString()),
-            title: Text(tabela[index].nome.toString()),
-            trailing: Text(tabela[index].pontos.toString()),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TimePage(
-                    key: Key(tabela[index].nome),
-                    time: tabela[index],
-                  ),
+      body: Consumer<TimesRepository>(
+        builder: (context, value, child) {
+          return ListView.separated(
+            itemCount: value.times.length,
+            itemBuilder: ((context, index) {
+              final List<Time> tabela = value.times;
+              return ListTile(
+                leading: Brasao(
+                  image: tabela[index].brasao.toString(),
+                  width: 40,
                 ),
+                title: Text(tabela[index].nome.toString()),
+                subtitle: Text("Títulos: ${tabela[index].titulos.length}"),
+                trailing: Text(tabela[index].pontos.toString()),
+                onTap: () {
+                  Get.to(
+                    () => TimePage(
+                      key: Key(tabela[index].nome),
+                      time: tabela[index],
+                    ),
+                  );
+                },
               );
-            },
+            }),
+            separatorBuilder: (_, __) => const Divider(),
+            padding: const EdgeInsets.all(16),
           );
-        }),
-        separatorBuilder: (_, __) => const Divider(),
-        padding: const EdgeInsets.all(16),
+        },
       ),
     );
   }

@@ -1,43 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:futbol_teams/models/time.dart';
 import 'package:futbol_teams/models/titulo.dart';
 import 'package:futbol_teams/repositories/times_repository.dart';
-import 'package:provider/provider.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
-class AddTituloPage extends StatefulWidget {
-  final Time? time;
+class EditTituloPage extends StatefulWidget {
+  final Titulo titulo;
 
-  const AddTituloPage({super.key, this.time});
+  const EditTituloPage({super.key, required this.titulo});
 
   @override
-  State<AddTituloPage> createState() => _AddTituloPageState();
+  State<EditTituloPage> createState() => _EditTituloPageState();
 }
 
-class _AddTituloPageState extends State<AddTituloPage> {
+class _EditTituloPageState extends State<EditTituloPage> {
   final _campeonato = TextEditingController();
   final _ano = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void save() {
-    Provider.of<TimesRepository>(context, listen: false).addTitulo(
-      time: widget.time!,
-      titulo: Titulo(
-        campeonato: _campeonato.text,
-        ano: _ano.text,
-      ),
+  @override
+  void initState() {
+    super.initState();
+    _ano.text = widget.titulo.ano;
+    _campeonato.text = widget.titulo.campeonato;
+  }
+
+  void editar() {
+    Provider.of<TimesRepository>(context, listen: false).editTitulo(
+      titulo: widget.titulo,
+      campeonato: _campeonato.text,
+      ano: _ano.text,
     );
 
     Get.back();
-
-    Get.snackbar("Sucesso!", "Salvo com sucesso");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Adicionar título"),
+        title: const Text("Editar título"),
+        backgroundColor: Colors.grey[800],
+        actions: [
+          IconButton(onPressed: editar, icon: const Icon(Icons.check)),
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -74,31 +80,6 @@ class _AddTituloPageState extends State<AddTituloPage> {
                   }
                   return null;
                 },
-              ),
-            ),
-            Expanded(
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                margin: const EdgeInsets.all(24),
-                child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        save();
-                      }
-                    },
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check),
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                            "Salvar",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ],
-                    )),
               ),
             ),
           ],
